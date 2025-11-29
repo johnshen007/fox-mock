@@ -36,14 +36,29 @@ public class HttpStorage implements Storage {
     @Override
     public boolean loadData(FoxMockAgentArgs request) {
         if (StringUtils.isBlank(request.getMockDataHttpUrl())) {
+            LOG.info("mockDataHttpUrl is blank");
             return false;
         }
 
+        LOG.info("Loading mock data from HTTP URL: {}", request.getMockDataHttpUrl());
         String mockDataText = HttpUtils.get(request.getMockDataHttpUrl());
 
         if (StringUtils.isBlank(mockDataText)) {
+            LOG.info("HTTP response is empty or null");
             return false;
         }
+
+        // Remove surrounding quotes if response is a JSON string
+        mockDataText = mockDataText.trim();
+        if (mockDataText.startsWith("\"") && mockDataText.endsWith("\"")) {
+            mockDataText = mockDataText.substring(1, mockDataText.length() - 1);
+            // Unescape newlines in JSON string
+            mockDataText = mockDataText.replace("\\n", "\n");
+            mockDataText = mockDataText.replace("\\r", "\r");
+            LOG.info("Unwrapped JSON string response");
+        }
+
+        LOG.info("Received mock data, length: {}", mockDataText.length());
 
         String dataMD5 = MD5.getInstance().getMD5String(mockDataText);
         if (StringUtils.isBlank(cacheDataMD5)) {
@@ -51,6 +66,7 @@ public class HttpStorage implements Storage {
         } else {
             // 没有变动无需重新mock
             if (dataMD5.equals(cacheDataMD5)) {
+                LOG.info("Mock data unchanged (MD5: {}), skipping reload", dataMD5.substring(0, 8));
                 return false;
             }
             cacheDataMD5 = dataMD5;
@@ -66,11 +82,15 @@ public class HttpStorage implements Storage {
             for (String key : keys) {
                 String value = properties.getProperty(key);
                 mockData.put(key, value);
+                LOG.info("Loaded mock entry: key='{}', value length={}", key, value != null ? value.length() : 0);
             }
+            LOG.info("Successfully loaded {} mock data entries from HTTP", mockData.size());
         } catch (IOException e) {
             LOG.error("loadData IOException, url is {}", request.getMockDataHttpUrl(), e);
+            return false;
         } catch (Exception e) {
             LOG.error("loadData Exception, url is {}", request.getMockDataHttpUrl(), e);
+            return false;
         }
 
         return true;

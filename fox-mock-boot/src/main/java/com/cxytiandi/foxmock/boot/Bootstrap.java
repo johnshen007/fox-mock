@@ -23,6 +23,7 @@ public class Bootstrap {
 
     public static void main(String[] args) {
         try {
+            System.setProperty("jdk.attach.allowAttachSelf", "true");
             Properties config = Config.getConfig();
 
             String foxMockFilePath = config.getProperty("foxMockFilePath", "");
@@ -35,8 +36,8 @@ public class Bootstrap {
             }
 
             VirtualMachine attach = VirtualMachine.attach(String.valueOf(getPid()));
-            String agentArgs = String.format("%s=foxMockFilePath=%s,mockMethodWhiteList=%s,mockDataHttpUrl=%s", foxMockAgentJarPath, foxMockFilePath, mockMethodWhiteList, mockDataHttpUrl);
-            attach.loadAgent(agentArgs);
+            String agentOptions = String.format("foxMockFilePath=%s,mockMethodWhiteList=%s,mockDataHttpUrl=%s", foxMockFilePath, mockMethodWhiteList, mockDataHttpUrl);
+            attach.loadAgent(foxMockAgentJarPath, agentOptions);
             attach.detach();
         } catch (Exception e) {
             e.printStackTrace();

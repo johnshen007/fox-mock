@@ -1,5 +1,6 @@
 package com.cxytiandi.foxmock.example;
 
+import com.alibaba.fastjson.JSON;
 import com.cxytiandi.foxmock.example.dubbo.DubboApiTestService;
 import com.cxytiandi.foxmock.example.feign.FeignApiTestService;
 import com.cxytiandi.foxmock.example.mybatis.UserMapper;
@@ -21,14 +22,20 @@ import java.util.Objects;
  * @作者介绍 http://cxytiandi.com/about
  * @时间 2022-04-18 22:11
  */
-@EnableFeignClients(basePackages = "com.cxytiandi.foxmock.example.feign")
-@EnableTransactionManagement
+//@EnableFeignClients(basePackages = "com.cxytiandi.foxmock.example.feign")
+//@EnableTransactionManagement
 @SpringBootApplication
 public class FoxMockApp {
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(FoxMockApp.class);
+//        SpringApplication.run(FoxMockApp.class);
+        UserService userService = new UserService();
+        UserService.UserReq userReq = new UserService.UserReq();
+        userReq.setId(2);
+        UserInfo name2 = userService.getName2(userReq);
+        System.out.println(String.format("你好 getName2 %s", JSON.toJSONString(name2)));
+//
+//        while (true) {
 
-        while (true) {
            /* UserService userService = new UserService();
             UserService.UserReq userReq = new UserService.UserReq();
             userReq.setId(2);
@@ -61,33 +68,33 @@ public class FoxMockApp {
             System.out.println("mapper findNameById:" + mapper.findNameById(1));
             System.out.println("mapper updateNameById:" + mapper.updateNameById(1, "张三"));
 */
-            DubboApiTestService dubboApiTestService = ApplicationContextHelper.getBean(DubboApiTestService.class);
-            System.out.println("dubbo getUserInfo:" + new Gson().toJson(dubboApiTestService.getUserInfo(1L)));
-            Result<UserDetail> userDetailResult1 = dubboApiTestService.getUserDetail();
-            System.out.println("dubbo getUserDetail:" + new Gson().toJson(userDetailResult1));
-            UserDetail userDetail1 = userDetailResult1.getData();
-            if (Objects.nonNull(userDetail1)) {
-                Map<String, UserDetail.UserAddress> addressMap = userDetail1.getAddressMap();
-                addressMap.forEach((k,v) -> {
-                    System.out.println(k + "\t" + v.getAddress());
-                });
-            }
-
-            FeignApiTestService feignApiTestService = ApplicationContextHelper.getBean(FeignApiTestService.class);
-            System.out.println("feign getUserInfo:" + new Gson().toJson(feignApiTestService.getUserInfo(1L)));
-            userDetailResult1 = feignApiTestService.getUserDetail();
-            System.out.println("feign getUserDetail:" + new Gson().toJson(userDetailResult1));
-            userDetail1 = userDetailResult1.getData();
-            if (Objects.nonNull(userDetail1)) {
-                Map<String, UserDetail.UserAddress> addressMap = userDetail1.getAddressMap();
-                addressMap.forEach((k,v) -> {
-                    System.out.println(k + "\t" + v.getAddress());
-                });
-            }
-
-            System.out.println("----------------------------------------");
-            Thread.sleep(5000);
-        }
+//            DubboApiTestService dubboApiTestService = ApplicationContextHelper.getBean(DubboApiTestService.class);
+//            System.out.println("dubbo getUserInfo:" + new Gson().toJson(dubboApiTestService.getUserInfo(1L)));
+//            Result<UserDetail> userDetailResult1 = dubboApiTestService.getUserDetail();
+//            System.out.println("dubbo getUserDetail:" + new Gson().toJson(userDetailResult1));
+//            UserDetail userDetail1 = userDetailResult1.getData();
+//            if (Objects.nonNull(userDetail1)) {
+//                Map<String, UserDetail.UserAddress> addressMap = userDetail1.getAddressMap();
+//                addressMap.forEach((k,v) -> {
+//                    System.out.println(k + "\t" + v.getAddress());
+//                });
+//            }
+//
+//            FeignApiTestService feignApiTestService = ApplicationContextHelper.getBean(FeignApiTestService.class);
+//            System.out.println("feign getUserInfo:" + new Gson().toJson(feignApiTestService.getUserInfo(1L)));
+//            userDetailResult1 = feignApiTestService.getUserDetail();
+//            System.out.println("feign getUserDetail:" + new Gson().toJson(userDetailResult1));
+//            userDetail1 = userDetailResult1.getData();
+//            if (Objects.nonNull(userDetail1)) {
+//                Map<String, UserDetail.UserAddress> addressMap = userDetail1.getAddressMap();
+//                addressMap.forEach((k,v) -> {
+//                    System.out.println(k + "\t" + v.getAddress());
+//                });
+//            }
+//
+//            System.out.println("----------------------------------------");
+//            Thread.sleep(5000);
+//        }
     }
 
 }

@@ -75,6 +75,12 @@ public class MockClassFileTransformer implements ClassFileTransformer {
                String methodName = method.getName();
                String key = String.format("%s#%s", classInfo.getClassName(), methodName);
                String data = StorageHelper.get(key);
+
+               // Debug log to check all methods being transformed
+               if (classInfo.getClassName().contains("UserService")) {
+                   LOG.info("Checking method: {}, found mock data: {}", key, data != null);
+               }
+
                if (Objects.nonNull(data)) {
                    match = true;
                    LOG.info(String.format("mock methods %s, mock data is %s", key, data));
